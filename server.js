@@ -1,22 +1,23 @@
 const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const bodyParser = require('body-parser');
-const session = require('express-session');
+const dotenv = require('dotenv');
+
+dotenv.config(); // Load environment variables from .env file
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Use process.env.PORT for Vercel deployment
 
-// Middleware to parse request bodies
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Session middleware
 app.use(session({
-    secret: 'your_secret_key', // Change this to a strong secret
+    secret: process.env.SESSION_SECRET || 'default_secret', // Use environment variable
     resave: false,
     saveUninitialized: true
 }));
 
-// Middleware to serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 app.use('/songs', express.static('songs')); // Serve songs directory as static files
 
@@ -36,7 +37,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    if (username === 'adminsongs' && password === '8920419664') {
+    if (username === 'adminsong' && password === '8920419664') {
         req.session.loggedIn = true;
         res.redirect('/');
     } else {
